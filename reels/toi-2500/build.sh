@@ -1,23 +1,27 @@
 #!/usr/bin/env bash
-# Rebuild the reel: frames (120 fps) -> 60 fps with 2-frame motion blur, + audio.
-# Usage: ./build.sh <work_dir> <out_dir>
+# Rebuild the voice-synced reel.
+# Usage: ./build.sh <voice.mp3> [work_dir] [out_dir]
+# Timeline is warped to the voiceover via warp.json (used by reel.html and sound.py).
 set -euo pipefail
 cd "$(dirname "$0")"
-WORK=${1:-./_work}; OUT=${2:-.}
-F=$WORK/frames; mkdir -p "$F"
-if [ "$(ls "$F"/*.jpg 2>/dev/null | wc -l)" -ne 3168 ]; then
-  node render.js "$F" 120 0 1056 & node render.js "$F" 120 1056 2112 & node render.js "$F" 120 2112 3168 & wait
+VOICE=$1; WORK=${2:-./_work}; OUT=${3:-./out}
+F=$WORK/frames; mkdir -p "$F" "$OUT"
+DUR=$(python3 -c "import json;print(json.load(open('warp.json'))['dur'])")
+TOTAL=$(python3 -c "print(round($DUR*120))")
+if [ "$(ls "$F"/*.jpg 2>/dev/null | wc -l)" -ne "$TOTAL" ]; then
+  A=$((TOTAL/3)); B=$((2*TOTAL/3))
+  node render.js "$F" 120 0 $A & node render.js "$F" 120 $A $B & node render.js "$F" 120 $B $TOTAL & wait
 fi
-python3 -I sound.py "$WORK/mix.wav"
-python3 -I sound.py "$WORK/sfx.wav" --sfx-only
-VF="tmix=frames=2:weights='1 1',select='not(mod(n\,2))',setpts=N/60/TB,format=yuv420p"
-for kind in mix sfx; do
-  name=$([ $kind = mix ] && echo "toi-reel-music" || echo "toi-reel-sfx-only")
-  ffmpeg -y -loglevel error -framerate 120 -i "$F/f%05d.jpg" -i "$WORK/$kind.wav" \
-    -vf "$VF" -r 60 -c:v libx264 -preset slow -crf 17 -profile:v high -movflags +faststart \
-    -af "loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k -ar 48000 \
-    -t 26.4 "$OUT/$name.mp4"
+python3 -I sound.py "$WORK/bed.wav"
+python3 -I sound.py "$WORK/bedsfx.wav" --sfx-only
+for k in bed bedsfx; do
+  ffmpeg -y -loglevel error -i "$VOICE" -i "$WORK/$k.wav" -filter_complex \
+    "[0:a]aresample=48000,pan=stereo|c0=c0|c1=c0,highpass=f=80,acompressor=threshold=-20dB:ratio=3:attack=5:release=120,loudnorm=I=-16:TP=-2,apad=whole_dur=$DUR,asplit=2[v][key];[1:a]volume=0.4[b];[b][key]sidechaincompress=threshold=0.03:ratio=6:attack=20:release=300[bd];[v][bd]amix=inputs=2:duration=longest:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,atrim=0:$DUR" \
+    -ar 48000 "$WORK/final_$k.wav"
 done
-ffmpeg -y -loglevel error -framerate 120 -i "$F/f%05d.jpg" -vf "$VF" -r 60 -c:v libx264 -preset slow -crf 17 \
-  -profile:v high -movflags +faststart -an -t 26.4 "$OUT/toi-reel-silent.mp4"
+VF="tmix=frames=2:weights='1 1',select='not(mod(n\,2))',setpts=N/60/TB,format=yuv420p"
+ffmpeg -y -loglevel error -framerate 120 -i "$F/f%05d.jpg" -i "$WORK/final_bed.wav" -vf "$VF" -r 60 -c:v libx264 -preset slow -crf 18 \
+  -profile:v high -movflags +faststart -c:a aac -b:a 192k -t "$DUR" "$OUT/toi-reel-voice-music.mp4"
+ffmpeg -y -loglevel error -framerate 120 -i "$F/f%05d.jpg" -i "$WORK/final_bedsfx.wav" -vf "$VF" -r 60 -c:v libx264 -preset slow -crf 18 \
+  -profile:v high -movflags +faststart -c:a aac -b:a 192k -t "$DUR" "$OUT/toi-reel-voice-sfx.mp4"
 echo done
