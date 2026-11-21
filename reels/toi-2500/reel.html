@@ -531,17 +531,17 @@ function renderAt(t){
   animText(T.s7a, t, 17.5, 20.5);
   animText(T.s7b, t, 18.4, 20.5, {stagger:0.1, scaleIn:1.4});
   animText(T.s7c, t, 19.5, 20.55, {stagger:0.06});
-  animText(T.s8a, t, 21.05, 23.45);
-  animText(T.s8b, t, 21.2, 23.45, {stagger:0.13, din:0.4, rise:0, scaleIn:2.2});
-  animText(T.s8c, t, 21.9, 23.5);
-  animText(T.s8d, t, 22.3, 23.5);
+  animText(T.s8a, t, 21.05, 23.7);
+  animText(T.s8b, t, 21.2, 23.7, {stagger:0.13, din:0.4, rise:0, scaleIn:2.2});
+  animText(T.s8c, t, 21.9, 23.72);
+  animText(T.s8d, t, 22.3, 23.72);
   animText(T.s9a, t, 24.05, 99, {stagger:0.06});
   animText(T.s9b, t, 24.6, 99, {din:0.35, rise:30, scaleIn:1.5});
   animText(T.s9c, t, 24.85, 99, {din:0.35, rise:30, scaleIn:1.5});
 
   // comment bubble + arrow (scene 8)
   {
-    const a=eOutBack(seg(t,22.0,22.4),1.6), out=eIn3(seg(t,23.4,23.75));
+    const a=eOutBack(seg(t,22.0,22.4),1.6), out=eIn3(seg(t,23.65,23.95));
     const o=a*(1-out); bubble.style.opacity=o; bubble.style.visibility=o>0.001?'visible':'hidden';
     bubble.style.transform=`translateY(${(1-a)*60 + out*-40}px) scale(${lerp(0.8,1,a)})`;
     const typed = Math.floor(clamp((t-22.45)/0.45)*3.999); btx.textContent='ТОЙ'.slice(0,typed);
