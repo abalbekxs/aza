@@ -495,7 +495,7 @@ function renderAt(t){
     if(o){
       place(bars, 540, 960, 0, `rotateY(${Math.sin((t-17.4)*0.8)*6}deg)`);
       const ga=eOutBack(seg(t,17.45,18.05),1.2), gb=eOutBack(seg(t,17.65,18.25),1.2);
-      const out=eIn3(seg(t,20.6,21.1));
+      const out=eIn3(seg(t,20.4,20.9));
       const ha=HA*ga*(1-out), hb=HB*gb*(1-out);
       barA.style.top=(BASE-ha)+'px'; barA.style.height=ha+'px';
       barB.style.top=(BASE-hb)+'px'; barB.style.height=hb+'px';
@@ -528,20 +528,20 @@ function renderAt(t){
   animText(T.s6a, t, 14.5, 17.25, {stagger:0.1});
   animText(T.s6b, t, 15.2, 17.3, {stagger:0.08});
   animText(T.s6c, t, 15.55, 17.3);
-  animText(T.s7a, t, 17.5, 20.85);
-  animText(T.s7b, t, 18.4, 20.9, {stagger:0.1, scaleIn:1.4});
-  animText(T.s7c, t, 19.5, 20.9, {stagger:0.09});
-  animText(T.s8a, t, 21.05, 23.85);
-  animText(T.s8b, t, 21.2, 23.9, {stagger:0.13, din:0.4, rise:0, scaleIn:2.2});
-  animText(T.s8c, t, 21.9, 23.9);
-  animText(T.s8d, t, 22.3, 23.9);
+  animText(T.s7a, t, 17.5, 20.5);
+  animText(T.s7b, t, 18.4, 20.5, {stagger:0.1, scaleIn:1.4});
+  animText(T.s7c, t, 19.5, 20.55, {stagger:0.06});
+  animText(T.s8a, t, 21.05, 23.45);
+  animText(T.s8b, t, 21.2, 23.45, {stagger:0.13, din:0.4, rise:0, scaleIn:2.2});
+  animText(T.s8c, t, 21.9, 23.5);
+  animText(T.s8d, t, 22.3, 23.5);
   animText(T.s9a, t, 24.05, 99, {stagger:0.06});
   animText(T.s9b, t, 24.6, 99, {din:0.35, rise:30, scaleIn:1.5});
   animText(T.s9c, t, 24.85, 99, {din:0.35, rise:30, scaleIn:1.5});
 
   // comment bubble + arrow (scene 8)
   {
-    const a=eOutBack(seg(t,22.0,22.4),1.6), out=eIn3(seg(t,23.7,24.0));
+    const a=eOutBack(seg(t,22.0,22.4),1.6), out=eIn3(seg(t,23.4,23.75));
     const o=a*(1-out); bubble.style.opacity=o; bubble.style.visibility=o>0.001?'visible':'hidden';
     bubble.style.transform=`translateY(${(1-a)*60 + out*-40}px) scale(${lerp(0.8,1,a)})`;
     const typed = Math.floor(clamp((t-22.45)/0.45)*3.999); btx.textContent='ТОЙ'.slice(0,typed);
