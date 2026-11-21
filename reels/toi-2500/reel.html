@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="ky">
+<head>
+<meta charset="utf-8">
+<title>Той чакыруу рилс</title>
+<style>
+  :root {
+    --navy: #0b1230;
+    --wine: #3b0d22;
+    --cream: #f7efdf;
+    --paper: #f3e7cf;
+    --gold1: #fff3c8;
+    --gold2: #f1c25a;
+    --gold3: #b07a28;
+    --red: #ff5b5b;
+  }
+  html, body { margin: 0; padding: 0; background: #000; }
+  body { width: 1080px; height: 1920px; overflow: hidden; }
+  #stage {
+    position: relative; width: 1080px; height: 1920px; overflow: hidden;
+    background: var(--navy);
+    perspective: 1500px; perspective-origin: 50% 46%;
+    font-family: "Inter", sans-serif; color: var(--cream);
+  }
+  #bg { position: absolute; inset: -200px; }
+  #orn { position: absolute; inset: -300px; opacity: .10; }
+  #dust { position: absolute; inset: 0; }
+  .dot { position: absolute; border-radius: 50%; background: var(--gold2); }
+  #world {
+    position: absolute; left: 0; top: 0; width: 1080px; height: 1920px;
+    transform-style: preserve-3d; transform-origin: 540px 960px;
+  }
+  .w { position: absolute; left: 0; top: 0; transform-style: preserve-3d; will-change: transform; }
+
+  /* paper invitation card */
+  .card {
+    width: 200px; height: 280px; border-radius: 10px;
+    background: linear-gradient(160deg, #fbf4e6, #ead9b8);
+    box-shadow: 0 18px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(150,110,50,.35);
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 14px; border: 2px solid #c79a48; border-radius: 6px;
+  }
+  .card::after {
+    content: ""; position: absolute; left: 50%; top: 40%; width: 46px; height: 46px;
+    border: 3px solid #c79a48; transform: translate(-50%,-50%) rotate(45deg);
+  }
+  .card .lbl {
+    position: absolute; left: 0; right: 0; bottom: 56px; text-align: center;
+    font: 700 17px "Inter"; letter-spacing: .28em; color: #8a6427;
+  }
+
+  /* hero card with two faces */
+  #hero { width: 480px; height: 660px; }
+  #hero .face {
+    position: absolute; inset: 0; border-radius: 22px; backface-visibility: hidden;
+    background: linear-gradient(160deg, #fdf7ea, #e9d6b2);
+    box-shadow: 0 40px 80px rgba(0,0,0,.45), inset 0 0 0 1px rgba(150,110,50,.4);
+    overflow: hidden;
+  }
+  #hero .face::before { content: ""; position: absolute; inset: 28px; border: 3px solid #c79a48; border-radius: 12px; }
+  #hero .front .diamond {
+    position: absolute; left: 50%; top: 36%; width: 110px; height: 110px; border: 5px solid #c79a48;
+    transform: translate(-50%,-50%) rotate(45deg);
+  }
+  #hero .front .diamond::after { content: ""; position: absolute; inset: 22px; background: #c79a48; }
+  #hero .front .t { position: absolute; left: 0; right: 0; top: 60%; text-align: center; font: 800 44px "Inter Display"; letter-spacing: .2em; color: #7d5a22; }
+  #hero .back { transform: rotateY(180deg); }
+  #hero .back .price {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-8deg);
+    padding: 22px 40px; border: 8px solid #b0362f; border-radius: 18px; color: #b0362f;
+    font: 900 120px/1 "Inter Display"; white-space: nowrap;
+  }
+  #hero .back .price small { font-size: 60px; font-weight: 800; }
+  #hero .back .cap { position: absolute; left: 0; right: 0; top: 16%; text-align: center; font: 800 34px "Inter"; letter-spacing: .25em; color: #7d5a22; }
+
+  /* grid of 300 */
+  #grid { width: 780px; height: 1360px; }
+  .gc { position: absolute; width: 44px; height: 60px; border-radius: 4px; background: linear-gradient(160deg, #fbf4e6, #e6d3ae); box-shadow: inset 0 0 0 2px #c79a48; }
+
+  /* route */
+  #route { width: 1080px; height: 1920px; }
+  #bundle { width: 120px; height: 90px; }
+  #bundle i { position: absolute; width: 110px; height: 76px; border-radius: 6px; background: linear-gradient(160deg,#fbf4e6,#e6d3ae); box-shadow: inset 0 0 0 2px #c79a48, 0 8px 14px rgba(0,0,0,.35); }
+
+  /* phone */
+  #phone { width: 440px; height: 900px; }
+  #screen {
+    position: absolute; left: 22px; top: 22px; width: 396px; height: 856px; border-radius: 52px; overflow: hidden;
+    background: radial-gradient(120% 70% at 50% 20%, #5a1530, #22081a 70%);
+  }
+  #screen .o1 { position: absolute; left: 50%; top: 210px; width: 150px; height: 150px; border: 4px solid var(--gold2); transform: translate(-50%,-50%) rotate(45deg); }
+  #screen .o1::after { content: ""; position: absolute; inset: 24px; border: 3px solid var(--gold2); }
+  #screen .o2 { position: absolute; left: 50%; top: 210px; width: 60px; height: 60px; background: var(--gold2); transform: translate(-50%,-50%) rotate(45deg); }
+  #screen .tt { position: absolute; left: 0; right: 0; top: 340px; text-align: center; font: 900 92px "Inter Display"; letter-spacing: .06em; }
+  #screen .st { position: absolute; left: 0; right: 0; top: 470px; text-align: center; font: 600 30px/1.35 "Inter"; color: #ecd9b8; }
+  #screen .btn { position: absolute; left: 60px; right: 60px; top: 650px; height: 86px; border-radius: 43px; background: linear-gradient(180deg,var(--gold1),var(--gold2) 50%,var(--gold3)); color: #3a1a08; font: 800 32px/86px "Inter"; text-align: center; }
+  #screen .line { position: absolute; left: 90px; right: 90px; height: 2px; background: rgba(241,194,90,.5); }
+
+  #chip { height: 96px; padding: 0 40px 0 30px; border-radius: 48px; display: flex; align-items: center; gap: 18px;
+    background: linear-gradient(180deg,var(--gold1),var(--gold2) 55%,var(--gold3)); color: #3a1a08; font: 800 44px "Inter"; white-space: nowrap;
+    box-shadow: 0 0 60px rgba(241,194,90,.55); }
+
+  /* bars */
+  .bar { position: absolute; width: 240px; border-radius: 18px 18px 6px 6px; }
+  #barA { background: linear-gradient(180deg, #e8d6b3, #b99d6f); box-shadow: inset 0 0 0 3px rgba(120,80,30,.35); }
+  #barB { background: linear-gradient(180deg, var(--gold1), var(--gold2) 45%, var(--gold3)); box-shadow: 0 0 60px rgba(241,194,90,.35); }
+  .barlbl { position: absolute; left: 0; right: 0; text-align: center; font: 800 46px "Inter Display"; color: #2b1606; }
+  .barcap { position: absolute; left: 0; right: 0; text-align: center; font: 700 38px "Inter"; color: var(--cream); }
+  #gap { position: absolute; width: 240px; border: 4px dashed var(--gold2); border-bottom: none; border-radius: 18px 18px 0 0; }
+
+  /* text overlay */
+  #ui { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+  .tx { position: absolute; left: 80px; width: 780px; white-space: nowrap; filter: drop-shadow(0 6px 14px rgba(0,0,0,.55)) drop-shadow(0 0 2px rgba(0,0,0,.35)); }
+  .tx .wd { display: inline-block; will-change: transform, filter, opacity; }
+  .k { font: 700 62px/1.15 "Inter"; color: var(--cream); letter-spacing: -.01em; }
+  .p { font: 900 132px/1.0 "Inter Display"; letter-spacing: -.02em; }
+  .p .wd, .gold .wd, .gold {
+    background: linear-gradient(180deg, var(--gold1) 8%, var(--gold2) 48%, var(--gold3) 96%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .big { font: 900 250px/0.9 "Inter Display"; letter-spacing: -.04em; }
+  .num { font-variant-numeric: tabular-nums; }
+  .red .wd, .red { background: none; color: var(--red); -webkit-background-clip: border-box; }
+
+  #bubble { position: absolute; left: 80px; top: 1180px; height: 120px; padding: 0 44px 0 24px; border-radius: 60px;
+    background: rgba(255,255,255,.10); border: 2px solid rgba(255,255,255,.18); display: flex; align-items: center; gap: 22px; }
+  #bubble .av { width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(140deg,#f1c25a,#b0362f); }
+  #bubble .bt { font: 800 60px "Inter Display"; color: #fff; letter-spacing: .04em; }
+  #bubble .cur { display: inline-block; width: 5px; height: 58px; background: #fff; vertical-align: -8px; margin-left: 6px; }
+  #arrow { position: absolute; left: 600px; top: 1170px; width: 120px; height: 150px; }
+
+  #vig { position: absolute; inset: 0; background: radial-gradient(130% 85% at 50% 45%, transparent 55%, rgba(0,0,0,.55) 100%); }
+  #grain { position: absolute; inset: 0; opacity: .07; mix-blend-mode: overlay; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <svg id="orn" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice"></svg>
+  <div id="dust"></div>
+  <div id="world"></div>
+  <div id="ui"></div>
+  <div id="vig"></div>
+  <canvas id="grain" width="540" height="960"></canvas>
+</div>
+<script>
+'use strict';
+const W = 1080, H = 1920, BEAT = 0.6;
+const DUR = 26.4;
+// scene windows (all on the 0.6 s beat grid)
+const S = { s1:[0,3.6], s2:[3.6,6.0], s3:[6.0,8.4], s4:[8.4,12.0], s5:[12.0,14.4], s6:[14.4,17.4], s7:[17.4,21.0], s8:[21.0,24.0], s9:[24.0,26.4] };
+
+// ---------- math ----------
+const clamp = (x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const lerp = (a,b,t)=>a+(b-a)*t;
+const seg = (t,a,b)=>clamp((t-a)/(b-a));
+const eOut3 = x=>1-Math.pow(1-x,3);
+const eIn3 = x=>x*x*x;
+const eIO3 = x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eOutExpo = x=>x>=1?1:1-Math.pow(2,-10*x);
+const eOutBack = (x,s=1.7)=>1+(s+1)*Math.pow(x-1,3)+s*Math.pow(x-1,2);
+const eInBack = (x,s=1.7)=>(s+1)*x*x*x-s*x*x;
+function rng(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function cr(p0,p1,p2,p3,t){ const t2=t*t,t3=t2*t; return .5*((2*p1)+(-p0+p2)*t+(2*p0-5*p1+4*p2-p3)*t2+(-p0+3*p1-3*p2+p3)*t3); }
+function track(keys, t){ // Catmull-Rom over [time, ...values]
+  if (t<=keys[0][0]) return keys[0].slice(1);
+  if (t>=keys[keys.length-1][0]) return keys[keys.length-1].slice(1);
+  let i=0; while (t>keys[i+1][0]) i++;
+  const k0=keys[Math.max(0,i-1)], k1=keys[i], k2=keys[i+1], k3=keys[Math.min(keys.length-1,i+2)];
+  const u=(t-k1[0])/(k2[0]-k1[0]);
+  return k1.slice(1).map((_,j)=>cr(k0[j+1],k1[j+1],k2[j+1],k3[j+1],u));
+}
+const fmt = n => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+
+// ---------- dom helpers ----------
+const $ = s=>document.querySelector(s);
+const world = $('#world'), ui = $('#ui');
+function el(tag, cls, parent, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; (parent||world).appendChild(e); return e; }
+function place(e, x, y, z=0, extra=''){ // centre-anchored placement in world coordinates
+  const w=e.offsetWidth, h=e.offsetHeight;
+  e.style.transform=`translate3d(${x-w/2}px,${y-h/2}px,${z}px) ${extra}`;
+}
+function vis(e, o){ e.style.opacity=o; e.style.visibility = o<=0.001?'hidden':'visible'; }
+
+// text block with per-word animation
+function textBlock(cls, y, words){
+  const d=el('div','tx '+cls,ui); d.style.top=y+'px';
+  d.innerHTML = words.split(' ').map(w=>`<span class="wd">${w}</span>`).join(' ');
+  d.wds=[...d.querySelectorAll('.wd')]; return d;
+}
+// enter: rise + unblur; exit: lift + blur
+function animText(d, t, tin, tout, o={}){
+  const st=o.stagger??0.07, din=o.din??0.45, dout=o.dout??0.3, rise=o.rise??70, scaleIn=o.scaleIn??1;
+  let any=false;
+  d.wds.forEach((w,i)=>{
+    const a=eOut3(seg(t, tin+i*st, tin+i*st+din));
+    const b=eIn3(seg(t, tout+i*st*0.5, tout+i*st*0.5+dout));
+    const op=a*(1-b);
+    if(op>0.001) any=true;
+    const y=(1-a)*rise - b*90;
+    const sc=lerp(scaleIn,1,eOutBack(seg(t, tin+i*st, tin+i*st+din),1.4));
+    const bl=(1-a)*14 + b*16;
+    w.style.opacity=op;
+    w.style.transform=`translateY(${y}px) scale(${sc})`;
+    w.style.filter= bl>0.2?`blur(${bl}px)`:'none';
+  });
+  d.style.visibility = any?'visible':'hidden';
+}
+
+// ---------- background ----------
+const bg=$('#bg');
+const orn=$('#orn');
+(function buildOrnament(){
+  // original geometric lattice: rhombi with hooked corners
+  let s='';
+  for(let gy=0; gy<5; gy++) for(let gx=0; gx<5; gx++){
+    const cx=gx*80+(gy%2?40:0), cy=gy*80;
+    s+=`<g transform="translate(${cx},${cy})" fill="none" stroke="#f1c25a" stroke-width="1.6">
+      <path d="M0 -26 L26 0 L0 26 L-26 0Z"/>
+      <path d="M0 -12 L12 0 L0 12 L-12 0Z"/>
+      <path d="M26 0 q10 -10 18 0 q-8 10 -18 0" />
+      <path d="M-26 0 q-10 10 -18 0 q8 -10 18 0" />
+    </g>`;
+  }
+  orn.innerHTML=s;
+})();
+const dust=$('#dust');
+const dustP=[]; { const r=rng(7); for(let i=0;i<46;i++){ const d=el('div','dot',dust); const s=2+r()*6; d.style.width=d.style.height=s+'px'; dustP.push({d,x:r()*W,y:r()*H,s,sp:10+r()*40,ph:r()*6.28,depth:.2+r()*.8}); } }
+
+// grain tiles
+const gctx=$('#grain').getContext('2d'); const grainTiles=[];
+{ const r=rng(99); for(let k=0;k<6;k++){ const im=gctx.createImageData(540,960); for(let i=0;i<im.data.length;i+=4){ const v=r()*255|0; im.data[i]=im.data[i+1]=im.data[i+2]=v; im.data[i+3]=255; } grainTiles.push(im);} }
+
+// ---------- world objects ----------
+// falling cards (scene 1 and 9)
+const FALL=[]; { const r=rng(3); for(let i=0;i<54;i++){ const c=el('div','w card'); el('div','lbl',c,'ЧАКЫРУУ');
+  const z = -900 + r()*1350;
+  FALL.push({c, x: 80+r()*920, z, t0: r()*2.9, dur: 0.9+r()*0.5, rx: r()*360, ry: r()*360, rz: -40+r()*80, spin: (r()-.5)*500,
+    px: 230+r()*620, py: 1530+r()*260 - (z*0.12), prz: -30+r()*60, sx: (r()-.5)*240 }); } }
+
+const hero=el('div','w'); hero.id='hero';
+hero.innerHTML=`<div class="face front"><div class="diamond"></div><div class="t">ЧАКЫРУУ</div></div>
+<div class="face back"><div class="cap">КАГАЗ</div><div class="price">20 <small>сом</small></div></div>`;
+
+const grid=el('div','w'); grid.id='grid';
+const GC=[]; { for(let r=0;r<20;r++) for(let c=0;c<15;c++){ const g=el('div','gc',grid); const x=c*52, y=r*68; g.style.left=x+'px'; g.style.top=y+'px'; GC.push({g,x:x+22,y:y+30}); }
+  const hx=7*52+22, hy=9*68+30; GC.forEach(o=>o.d=Math.hypot(o.x-hx,(o.y-hy)*0.8)); const md=Math.max(...GC.map(o=>o.d)); GC.forEach(o=>o.d/=md); }
+
+// route with houses
+const route=el('div','w'); route.id='route';
+const PATH='M190 1530 C 420 1530, 560 1440, 720 1330 S 760 1100, 520 1080 S 180 1040, 230 890 S 560 760, 800 840';
+route.innerHTML=`<svg width="1080" height="1920" viewBox="0 0 1080 1920" style="overflow:visible">
+  <path id="rpath" d="${PATH}" fill="none" stroke="#f7efdf" stroke-opacity=".75" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 22"/>
+  <path id="rgold" d="${PATH}" fill="none" stroke="#f1c25a" stroke-width="9" stroke-linecap="round"/>
+  <g id="houses"></g></svg>`;
+const rpath=route.querySelector('#rpath'), rgold=route.querySelector('#rgold'), RLEN=rpath.getTotalLength();
+const HOUSES=[0.2,0.38,0.55,0.72,0.92].map(f=>{ const p=rpath.getPointAtLength(f*RLEN); return {f,x:p.x,y:p.y}; });
+{ const g=route.querySelector('#houses'); g.innerHTML=HOUSES.map((h,i)=>`<g transform="translate(${h.x},${h.y-58})"><g class="hs">
+   <path d="M-46 0 L0 -40 L46 0 L46 46 L-46 46Z" fill="#1a1d3d" stroke="#f7efdf" stroke-width="5" stroke-linejoin="round"/>
+   <rect class="win" x="-13" y="10" width="26" height="26" fill="#f7efdf" opacity=".25"/></g></g>`).join(''); }
+const houseEls=[...route.querySelectorAll('.hs')];
+const bundle=el('div','w'); bundle.id='bundle'; bundle.innerHTML='<i style="left:4px;top:12px;transform:rotate(-6deg)"></i><i style="left:8px;top:6px;transform:rotate(3deg)"></i><i style="left:6px;top:0"></i>';
+
+// phone
+const phone=el('div','w'); phone.id='phone';
+phone.innerHTML=`<svg width="440" height="900" viewBox="0 0 440 900" style="position:absolute;inset:0;overflow:visible">
+  <rect id="pout" x="6" y="6" width="428" height="888" rx="66" fill="none" stroke="#f1c25a" stroke-width="8"/></svg>
+  <div id="screen"><div class="o1"></div><div class="o2"></div><div class="tt gold">ТОЙ</div>
+  <div class="line" style="top:450px"></div><div class="st">Сиздерди тойго<br>чакырабыз</div><div class="line" style="top:580px"></div>
+  <div class="btn">Ачуу</div></div>`;
+const pout=phone.querySelector('#pout'); const POUTLEN=2*(428+888); const screen=phone.querySelector('#screen');
+const chip=el('div','w'); chip.id='chip';
+chip.innerHTML=`<svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#3a1a08" stroke-width="2.6" stroke-linecap="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>шилтеме`;
+
+// constellation of 300 guests
+const con=el('div','w'); con.style.width='1000px'; con.style.height='1000px';
+let consvg='<svg width="1000" height="1000" viewBox="-500 -500 1000 1000" style="overflow:visible"><g id="cl"></g><g id="cd"></g></svg>';
+con.innerHTML=consvg;
+const CD=[]; { const gl=con.querySelector('#cl'), gd=con.querySelector('#cd'); let L='',D='';
+  for(let i=0;i<300;i++){ const a=i*2.39996, r=24*Math.sqrt(i+3); const x=Math.cos(a)*r, y=Math.sin(a)*r; CD.push({x,y,r});
+    L+=`<line x1="0" y1="0" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#f1c25a" stroke-width="1.4"/>`;
+    D+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" fill="#f7efdf"/>`; }
+  gl.innerHTML=L; gd.innerHTML=D; }
+const conLines=[...con.querySelectorAll('#cl line')], conDots=[...con.querySelectorAll('#cd circle')];
+const maxR=Math.max(...CD.map(c=>c.r));
+
+// bars
+const bars=el('div','w'); bars.style.width='1080px'; bars.style.height='1920px';
+bars.innerHTML=`<div class="bar" id="barA"><div class="barlbl" style="top:22px">6&#8239;000</div></div>
+<div class="bar" id="barB"><div class="barlbl" style="top:22px">2&#8239;500</div></div>
+<div id="gap"></div>
+<div class="barcap" id="capA" style="width:240px">кагаз</div><div class="barcap" id="capB" style="width:240px">онлайн</div>`;
+const barA=bars.querySelector('#barA'), barB=bars.querySelector('#barB'), gapEl=bars.querySelector('#gap'), capA=bars.querySelector('#capA'), capB=bars.querySelector('#capB');
+const BASE=1420, HA=680, HB=Math.round(680*2500/6000);
+const BAX=150, BBX=470;
+[[barA,BAX],[barB,BBX]].forEach(([b,x])=>{ b.style.left=x+'px'; });
+capA.style.left=BAX+'px'; capB.style.left=BBX+'px'; capA.style.top=capB.style.top=(BASE+18)+'px';
+gapEl.style.left=BBX+'px';
+
+// ---------- text ----------
+const T = {
+  n300: (()=>{ const d=el('div','tx p big num',ui); d.style.top='250px'; d.innerHTML='<span class="wd">300</span>'; d.wds=[...d.querySelectorAll('.wd')]; return d; })(),
+  h1a: textBlock('k', 500, 'конокко чакыруу —'),
+  h1b: textBlock('p', 610, 'канча'),
+  h1c: textBlock('p', 750, 'төлөйсүң?'),
+  s2a: textBlock('k', 270, 'Кагаз чакыруу —'),
+  s2b: textBlock('p', 360, 'бирөө 20 сом'),
+  s3a: textBlock('k', 270, '300 конок — бул'),
+  s3b: (()=>{ const d=el('div','tx p num',ui); d.style.top='360px'; d.style.fontSize='170px'; d.innerHTML='<span class="wd" id="c6000">20</span> <span class="wd">сом</span>'; d.wds=[...d.querySelectorAll('.wd')]; return d; })(),
+  s4a: textBlock('k', 270, 'Аны дагы'),
+  s4b: textBlock('p', 350, 'үймө-үй'),
+  s4c: textBlock('k', 500, 'таратып чыгыш керек'),
+  s5a: textBlock('k', 270, 'Менин онлайн чакыруум —'),
+  s5b: (()=>{ const d=textBlock('p num', 360, '2&#8239;500 сом'); d.style.fontSize='170px'; return d; })(),
+  s6a: textBlock('p', 270, 'Бир шилтеме —'),
+  s6b: textBlock('k', 400, '300 коноктун баарына'),
+  s6c: textBlock('k', 472, 'жетет'),
+  s7a: textBlock('k', 270, 'Айырмасы —'),
+  s7b: (()=>{ const d=textBlock('p num', 360, '3&#8239;500 сом'); d.style.fontSize='170px'; return d; })(),
+  s7c: textBlock('k', 560, 'Ал акча тойго калат'),
+  s8a: textBlock('k', 290, 'Комментарийге'),
+  s8b: (()=>{ const d=el('div','tx p',ui); d.style.top='390px'; d.style.fontSize='250px'; d.innerHTML='<span class="wd">«</span><span class="wd">Т</span><span class="wd">О</span><span class="wd">Й</span><span class="wd">»</span>'; d.wds=[...d.querySelectorAll('.wd')]; return d; })(),
+  s8c: textBlock('k', 720, 'деп жаз —'),
+  s8d: textBlock('k', 800, 'үлгү жиберем'),
+  s9a: textBlock('k', 300, 'Эми өзүң эсепте:'),
+  s9b: textBlock('p', 400, 'канча'),
+  s9c: textBlock('p', 540, 'төлөйсүң?'),
+};
+T.s8d.style.color='#e9d6b2'; T.s8d.style.fontWeight='600';
+T.s7c.style.color='#fff';
+const bubble=el('div','',ui); bubble.id='bubble'; bubble.innerHTML='<div class="av"></div><div class="bt"><span id="btx"></span><span class="cur"></span></div>';
+const btx=bubble.querySelector('#btx'), cur=bubble.querySelector('.cur');
+const arrow=el('div','',ui); arrow.id='arrow';
+arrow.innerHTML='<svg width="120" height="150" viewBox="0 0 120 150"><path d="M60 8 V120 M18 82 L60 128 L102 82" fill="none" stroke="#f1c25a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+// ---------- camera ----------
+// [t, x, y, z, rx, ry, rz]
+const CAM = [
+  [0.0,   0,  -40, -260, 14, -4, -2],
+  [1.8,   0,   10, -120, 10,  3,  1],
+  [3.6,  10,   40,   40,  6,  6,  2],
+  [4.8,   0,   20,  120,  2, -6, -1],
+  [6.0,   0,    0,   40,  4,  0,  0],
+  [7.2,   0,  -30, -120, 14,  5,  2],
+  [8.4, -20,  -10, -60,  10, -4,  0],
+  [10.2, 60,   80,   10,  8, -8, -3],
+  [12.0,  0,   20,   60,  4,  5,  1],
+  [13.2,  0,    0,  100,  2, -4, -1],
+  [14.4,  0,   10,   20,  3,  3,  0],
+  [15.9,  0,   20, -100,  6, -4,  1],
+  [17.4,  0,    0,  -40,  4,  8,  0],
+  [19.2, 10,  -10,   40,  3, -10, -1],
+  [21.0,  0,    0,   60,  2,  2,  0],
+  [22.5,  0,    0,   80,  1, -2,  0],
+  [24.0,  0,  -30, -180, 12, -3, -2],
+  [26.4,  0,  -40, -260, 14, -4, -2],
+];
+
+function camAt(t){ return track(CAM,t); }
+
+// ---------- render ----------
+function renderAt(t){
+  const [cx,cy,cz,rx,ry,rz]=camAt(t);
+  world.style.transform=`translate3d(${cx}px,${cy}px,${cz}px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+  ui.style.transform=`translate3d(${-ry*1.6}px,${rx*0.8-5}px,0)`;
+
+  // background colour story: cold paper half -> warm online half
+  const warm = eIO3(seg(t,11.6,13.0)) * (1-eIO3(seg(t,24.0,25.4)));
+  const h1 = `hsl(${lerp(228,336,warm)} ${lerp(55,55,warm)}% ${lerp(11,12,warm)}%)`;
+  const h2 = `hsl(${lerp(330,388,warm)%360} ${lerp(60,70,warm)}% ${lerp(14,20,warm)}%)`;
+  bg.style.background=`radial-gradient(90% 60% at ${50+ry*2}% ${38-rx}%, ${h2}, ${h1} 70%)`;
+  orn.style.transform=`translate(${-ry*6}px,${(t*-14)%160}px) rotate(${rz*0.5}deg)`;
+  dustP.forEach(p=>{ const y=(p.y - t*p.sp + 4000)%H; const x=p.x+Math.sin(t*0.7+p.ph)*20 - ry*8*p.depth;
+    p.d.style.transform=`translate(${x}px,${y}px)`; p.d.style.opacity=(0.25+0.5*p.depth)*(0.6+0.4*Math.sin(t*2+p.ph))*(0.6+0.6*warm); });
+  gctx.putImageData(grainTiles[Math.floor(t*24)%grainTiles.length],0,0);
+
+  // ---- falling cards: scene 1 (and replay in 9)
+  const f1 = t<S.s2[1] ? t+0.45 : (t>=S.s9[0]-0.2 ? (t-S.s9[0]+0.2)*1.15 : -1);
+  const pileOut = t<S.s9[0]-0.2 ? eIn3(seg(t,3.6,4.4)) : 0;   // pile sinks away when hero rises
+  const endFade = 1;
+  FALL.forEach(p=>{
+    if(f1<0){ vis(p.c,0); return; }
+    const u = seg(f1, p.t0, p.t0+p.dur);
+    if(u<=0){ vis(p.c,0); return; }
+    const e = eOut3(u);
+    const y = lerp(-500, p.py, e) + pileOut*700 + (u>=1 ? Math.sin(Math.min(1,(f1-p.t0-p.dur)*6)*3.14)*-10 : 0);
+    const x = lerp(p.x, p.px, e) + p.sx*Math.sin(u*3.14)*0.4;
+    const rot = `rotateX(${lerp(p.rx,62,e)}deg) rotateY(${lerp(p.ry,0,e)}deg) rotateZ(${lerp(p.rz+p.spin, p.prz, e)}deg)`;
+    place(p.c, x, y, p.z, rot);
+    // depth of field: cards far from focus plane (z≈0) soften; speed adds blur
+    const dof = Math.abs(p.z+cz*0.3)/120; const sp=(1-u)*6;
+    p.c.style.filter = `blur(${Math.min(14,dof+sp).toFixed(1)}px)`;
+    vis(p.c, (1-pileOut*0.9) * (t>=S.s9[0]-0.2 ? 1 : 1));
+  });
+
+  // ---- hero card (scene 2 -> collapses into grid in 3)
+  {
+    const up = eOut3(seg(t,3.6,4.3));
+    const flip = eIO3(seg(t,4.25,4.85));
+    const shrink = eIO3(seg(t,6.0,6.6));
+    const o = (t>=3.6 && t<6.7) ? 1 : 0;
+    const y = lerp(1700, 1050, up) + Math.sin((t-3.6)*2)*8 - shrink*40;
+    const s = lerp(1, 44/480, shrink);
+    const wob = Math.sin(seg(t,4.85,5.6)*Math.PI*3)*(1-seg(t,4.85,5.6))*8;
+    place(hero, 460, y, lerp(0, 0, shrink), `rotateX(${lerp(40,6,up)}deg) rotateY(${180*flip + wob}deg) rotateZ(${lerp(-12,-3,up)}deg) scale(${s})`);
+    hero.style.filter = up<1 ? `blur(${((1-up)*10).toFixed(1)}px)` : 'none';
+    vis(hero,o);
+  }
+
+  // ---- grid of 300 (scene 3) -> collapses to bundle (scene 4)
+  {
+    const g0=6.3, g1=7.7; const wave=seg(t,g0,g1);
+    const col = eIO3(seg(t,8.4,9.0));
+    const o = (t>=6.2 && t<9.05) ? 1 : 0;
+    vis(grid,o);
+    if(o){
+      place(grid, 460, lerp(1050, 1060, wave), -200, `rotateX(${lerp(8,38,eIO3(seg(t,6.4,8.0)))}deg) scale(${lerp(1,0.96,wave)})`);
+      // flip cards in: each card's appear time follows distance from hero
+      GC.forEach(o2=>{ const a=eOutBack(seg(t, g0+o2.d*(g1-g0-0.25), g0+o2.d*(g1-g0-0.25)+0.25),2);
+        const tx=(190-460+390)-o2.x, ty=(1530-1060+680)-o2.y; // toward bundle start in grid coords (approx.)
+        const c=eIn3(seg(t,8.4+o2.d*0.3,8.75+o2.d*0.3));
+        o2.g.style.transform=`translate(${tx*c}px,${ty*c}px) scale(${a*(1-c*0.6)})`; o2.g.style.opacity=a*(1-c); });
+      grid.style.filter=`blur(${(seg(t,7.9,8.4)*2).toFixed(1)}px)`;
+    }
+    const cnt = Math.round(lerp(1,300,clamp((t-g0)/(g1-g0-0.05))));
+    $('#c6000').textContent = fmt(t<g0?20:20*cnt);
+    T.s3b.classList.toggle('red', t>=7.8);
+  }
+
+  // ---- route (scene 4) and gold thread (scene 5)
+  {
+    const o = (t>=8.6 && t<13.2) ? 1 : 0; vis(route,o);
+    if(o){
+      place(route, 540, 960, 0, '');
+      const draw=eIO3(seg(t,8.7,11.6));
+      // use gold path as the "thread" in scene 5 only
+      const goldDraw = eIO3(seg(t,11.85,12.3));
+      const goldGone = eIn3(seg(t,12.3,12.75));
+      rgold.style.strokeDasharray = `${RLEN} ${RLEN}`;
+      rgold.style.strokeDashoffset = `${RLEN*(1-goldDraw) - RLEN*goldGone*(-1)}`;
+      rgold.style.opacity = goldDraw>0 ? 1 : 0;
+      // houses pop when bundle passes
+      const bp = draw;
+      houseEls.forEach((h,i)=>{ const hit=seg(bp, HOUSES[i].f-0.03, HOUSES[i].f+0.04); const pop=eOutBack(seg(t, 8.7+i*0.12, 9.1+i*0.12),2);
+        h.style.transformBox='fill-box'; h.style.transformOrigin='50% 100%';
+        h.setAttribute('opacity', pop*(1-eIn3(seg(t,11.9,12.4))));
+        h.style.transform=`scale(${pop*(1+Math.sin(hit*Math.PI)*0.18)})`;
+        h.querySelector('.win').setAttribute('opacity', 0.25+0.75*clamp(hit*2)); });
+      const p=rpath.getPointAtLength(Math.max(0.01,bp)*RLEN), p2=rpath.getPointAtLength(Math.min(1,bp+0.01)*RLEN);
+      const ang=Math.atan2(p2.y-p.y,p2.x-p.x)*180/Math.PI;
+      const bo = (t>=8.6 && t<12.0) ? clamp(seg(t,8.6,8.9)) * (1-eIn3(seg(t,11.7,12.0))) : 0;
+      place(bundle, p.x, p.y-46, 40, `rotateZ(${ang*0.25 + Math.sin(t*14)*3}deg) scale(${1+Math.abs(Math.sin(t*7))*0.04})`);
+      vis(bundle,bo);
+      rpath.style.opacity = 1-eIO3(seg(t,12.0,12.4));
+      rpath.style.strokeDasharray = makeDots(draw*RLEN);
+    } else vis(bundle,0);
+  }
+
+  // ---- phone (scene 5/6)
+  {
+    const o = (t>=12.1 && t<17.6) ? 1 : 0; vis(phone,o);
+    if(o){
+      const draw = eIO3(seg(t,12.3,13.0));
+      const fill = eOut3(seg(t,12.8,13.4));
+      const away = eIO3(seg(t,14.4,15.2));
+      const gone = eIn3(seg(t,16.9,17.5));
+      pout.style.strokeDasharray=`${POUTLEN} ${POUTLEN}`; pout.style.strokeDashoffset=`${POUTLEN*(1-draw)}`;
+      screen.style.opacity=fill; screen.style.transform=`scale(${lerp(0.94,1,fill)})`;
+      const x=lerp(460,460,away), y=lerp(1010,1020,away)+gone*200, z=lerp(0,-700,away);
+      place(phone, x, y, z, `rotateY(${lerp(-14,0,draw)+Math.sin(t*1.3)*4}deg) rotateX(${lerp(10,4,draw)}deg) scale(${lerp(1,0.9,away)})`);
+      phone.style.filter = away>0 ? `blur(${(away*6).toFixed(1)}px)` : 'none';
+      phone.style.opacity = 1-gone;
+    }
+  }
+  // link chip + constellation (scene 6)
+  {
+    const fly = eOutExpo(seg(t,14.55,15.25));
+    const gone = eIn3(seg(t,16.9,17.4));
+    const o = (t>=14.5 && t<17.5) ? 1 : 0; vis(chip,o*(1-gone));
+    if(o){ place(chip, 460, lerp(1150, 1020, fly), lerp(-600,160,fly), `scale(${lerp(0.3,1,fly) * (1-0.5*seg(t,15.3,15.8))}) rotateZ(${(1-fly)*-20}deg)`);
+      chip.style.filter = fly<1 ? `blur(${((1-fly)*8).toFixed(1)}px)` : 'none'; }
+    const co = (t>=15.0 && t<17.6) ? 1 : 0; vis(con, co*(1-gone));
+    if(co){
+      const spread = seg(t,15.2,16.9);
+      place(con, 460, 1020, -60, `rotateZ(${(t-15)*12}deg) rotateX(${12}deg) scale(${lerp(0.7,0.98,eOut3(seg(t,15.0,16.9)))})`);
+      CD.forEach((c,i)=>{ const k=c.r/maxR; const a=eOut3(seg(spread, k*0.85, k*0.85+0.15));
+        conLines[i].setAttribute('opacity', a*0.55); conDots[i].setAttribute('opacity', 0.15+0.85*a); conDots[i].setAttribute('r', 4+a*4 + (a>0&&a<1?3:0)); });
+    }
+  }
+
+  // ---- bars (scene 7)
+  {
+    const o=(t>=17.3 && t<21.2)?1:0; vis(bars,o);
+    if(o){
+      place(bars, 540, 960, 0, `rotateY(${Math.sin((t-17.4)*0.8)*6}deg)`);
+      const ga=eOutBack(seg(t,17.45,18.05),1.2), gb=eOutBack(seg(t,17.65,18.25),1.2);
+      const out=eIn3(seg(t,20.6,21.1));
+      const ha=HA*ga*(1-out), hb=HB*gb*(1-out);
+      barA.style.top=(BASE-ha)+'px'; barA.style.height=ha+'px';
+      barB.style.top=(BASE-hb)+'px'; barB.style.height=hb+'px';
+      const gp=eOut3(seg(t,18.35,18.8)); const lift=eIO3(seg(t,19.5,20.3));
+      const gh=(HA-HB)*gp*(1-out);
+      gapEl.style.top=(BASE-HB-gh - lift*120)+'px'; gapEl.style.height=gh+'px';
+      gapEl.style.opacity=gp*(1-lift)*(1-out);
+      gapEl.style.background=`rgba(241,194,90,${0.12+0.25*lift})`;
+      capA.style.opacity=capB.style.opacity=seg(t,17.9,18.3)*(1-out);
+    }
+  }
+
+  // ---- texts
+  animText(T.n300, t, -0.45, 3.45, {din:0.55, rise:120, scaleIn:1.3});
+  // slot-roll the "300" digits at the very start
+  
+  animText(T.h1a, t, -0.6, 3.5, {stagger:0.05});
+  animText(T.h1b, t, 0.9, 3.55, {din:0.35, rise:30, scaleIn:1.5});
+  animText(T.h1c, t, 1.15, 3.6, {din:0.35, rise:30, scaleIn:1.5});
+  animText(T.s2a, t, 3.75, 5.85);
+  animText(T.s2b, t, 4.5, 5.9, {stagger:0.12, scaleIn:1.3});
+  animText(T.s3a, t, 6.05, 8.25);
+  animText(T.s3b, t, 6.25, 8.3, {stagger:0.08});
+  { const stamp = t>=7.8 ? eOutBack(seg(t,7.8,8.05),3) : 0; T.s3b.style.transform = t>=7.8 ? `rotate(${-5*stamp}deg) scale(${1+0.25*(1-stamp)})` : 'none'; T.s3b.style.transformOrigin='30% 50%'; }
+  animText(T.s4a, t, 8.5, 11.85);
+  animText(T.s4b, t, 8.75, 11.9, {scaleIn:1.2});
+  animText(T.s4c, t, 9.1, 11.9, {stagger:0.09});
+  animText(T.s5a, t, 12.05, 14.25, {stagger:0.06});
+  animText(T.s5b, t, 12.6, 14.3, {stagger:0.1, scaleIn:1.4});
+  animText(T.s6a, t, 14.5, 17.25, {stagger:0.1});
+  animText(T.s6b, t, 15.2, 17.3, {stagger:0.08});
+  animText(T.s6c, t, 15.55, 17.3);
+  animText(T.s7a, t, 17.5, 20.85);
+  animText(T.s7b, t, 18.4, 20.9, {stagger:0.1, scaleIn:1.4});
+  animText(T.s7c, t, 19.5, 20.9, {stagger:0.09});
+  animText(T.s8a, t, 21.05, 23.85);
+  animText(T.s8b, t, 21.2, 23.9, {stagger:0.13, din:0.4, rise:0, scaleIn:2.2});
+  animText(T.s8c, t, 21.9, 23.9);
+  animText(T.s8d, t, 22.3, 23.9);
+  animText(T.s9a, t, 24.05, 99, {stagger:0.06});
+  animText(T.s9b, t, 24.6, 99, {din:0.35, rise:30, scaleIn:1.5});
+  animText(T.s9c, t, 24.85, 99, {din:0.35, rise:30, scaleIn:1.5});
+
+  // comment bubble + arrow (scene 8)
+  {
+    const a=eOutBack(seg(t,22.0,22.4),1.6), out=eIn3(seg(t,23.7,24.0));
+    const o=a*(1-out); bubble.style.opacity=o; bubble.style.visibility=o>0.001?'visible':'hidden';
+    bubble.style.transform=`translateY(${(1-a)*60 + out*-40}px) scale(${lerp(0.8,1,a)})`;
+    const typed = Math.floor(clamp((t-22.45)/0.45)*3.999); btx.textContent='ТОЙ'.slice(0,typed);
+    cur.style.opacity = (Math.floor(t*3)%2===0 || typed<3) ? 1 : 0;
+    const ao=seg(t,22.2,22.5)*(1-out); arrow.style.opacity=ao; arrow.style.visibility=ao>0.001?'visible':'hidden';
+    arrow.style.transform=`translateY(${Math.abs(Math.sin((t-22.2)*Math.PI/0.6))*-26}px)`;
+  }
+}
+
+function makeDots(shown){
+  const n=Math.max(0,Math.floor(shown/24));
+  if(n===0) return '0 99999';
+  return Array(n).fill('2 22').join(' ') + ' 0 99999';
+}
+
+window.renderAt = renderAt;
+window.DUR = DUR;
+document.fonts.ready.then(()=>{ renderAt(0); window.READY=true; });
+</script>
+</body>
+</html>
